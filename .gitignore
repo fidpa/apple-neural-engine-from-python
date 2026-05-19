@@ -1,0 +1,26 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Linter / type-checker caches
+.ruff_cache/
+.mypy_cache/
+
+# The BERT-SQuAD model is Apple's, not redistributed here.
+# Fetch it via ./download_model.sh
+*.mlmodel
+*.mlpackage/
+
+# Private marketing draft, not for the public repo
+LINKEDIN_POST.md
+
+# IDE / tooling
+.idea/
+.vscode/
+.claude/
+
+# OS
+.DS_Store
