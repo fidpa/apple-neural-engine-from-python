@@ -91,20 +91,31 @@ running `model_inspect.py` — it's the tool, this is the summary:
 
 ### A note on the pinned versions
 
-`transformers==4.36.2` and `torch==2.5.1` are deliberately old — these are the
-versions the original session ran on, and the pins exist so the experiment
-reproduces. `pip-audit` will flag ~20 advisories against them (mostly
-deserialization and ReDoS issues in `transformers`, two in `torch`). For
-**this** script none of them are reachable: the model file is Apple's, the
-tokenizer is downloaded from Hugging Face's signed CDN, and the inference
-inputs are hardcoded English strings. There is no path through which a
-hostile blob reaches the vulnerable code.
+`transformers==4.36.2` is deliberately old — it is the version the original
+session ran on, and the pin exists so the experiment reproduces. As of
+2026-08-08 the OSV database lists 44 advisories against it (mostly
+deserialization and ReDoS issues); `coremltools==8.3.0` and `numpy==1.26.3`
+have none. For **this** script none of the transformers advisories are
+reachable: the model file is Apple's, the tokenizer is downloaded from Hugging
+Face's signed CDN, and the inference inputs are hardcoded English strings.
+There is no path through which a hostile blob reaches the vulnerable code.
 
 If you copy this as scaffolding for a service that accepts untrusted input
 (user-uploaded models, free-form text from the wire, fine-tuning pipelines),
-upgrade first: `pip install -U transformers torch`. The ANE-specific parts
+upgrade first: `pip install -U transformers`. The ANE-specific parts
 (the `wordIDs`/`wordTypes`/float64/[1, 384] contract) do **not** depend on
 the transformers version.
+
+**No deep-learning framework is required.** `ane_working.py` uses
+`transformers` for `BertTokenizer` and nothing else — CoreML does the
+inference. So on import you will see:
+
+> None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be
+> available and only tokenizers, configuration and file/data utilities can be
+> used.
+
+That warning is expected here and can be ignored: tokenisers are exactly the
+part this repo uses.
 
 ## Roadmap / not yet done
 

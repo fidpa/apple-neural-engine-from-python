@@ -5,6 +5,52 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] — 2026-08-08
+
+Removes `torch` from `requirements.txt`. Nothing in this repository ever
+imported it: `ane_working.py` uses `transformers` for `BertTokenizer` alone,
+and the inference is CoreML's job. The pin had been carrying a deep-learning
+framework into every install of a project that never calls one.
+
+MINOR rather than PATCH, because `pip install -r requirements.txt` now produces
+a different environment than it did in 1.0.x — the pins are this project's
+promise, so a changed pin is never a patch.
+
+### Removed
+
+- **`torch==2.5.1` from `requirements.txt`.** Verified before removal, on
+  2026-08-08:
+  - No source file imports `torch`, directly or indirectly.
+  - `coremltools==8.3.0` does not depend on it either — a resolve of that pin
+    installs `attrs`, `cattrs`, `mpmath`, `protobuf`, `pyaml` and `sympy`, and
+    no framework.
+  - In a fresh virtualenv containing only `transformers==4.36.2` and
+    `numpy==1.26.3`, the complete tokenizer path of `ane_working.py` runs:
+    tokenisation of a real (question, context) pair, the cast to `float64`,
+    and the `convert_ids_to_tokens` / `convert_tokens_to_string` round-trip
+    used for answer extraction. `wordIDs` and `wordTypes` come out as
+    `(1, 384)` `float64`, which is the contract the model requires.
+
+  What this saves is smaller than it sounds and is stated here properly: on
+  this project's target platform the `torch` 2.5.1 wheel is **63.9 MB**
+  (macOS 11+, arm64, cp312; PyPI metadata as of 2026-08-08), not the 906 MB of
+  the Linux x86-64 wheel. The real gain is the dependency that disappears:
+  OSV lists **22 advisories** against `torch` 2.5.1 as of 2026-08-08, all of
+  which leave the tree with it.
+
+### Changed
+
+- **The README's note on the pinned versions was measurably out of date.** It
+  claimed "~20 advisories … two in `torch`". Measured against OSV on
+  2026-08-08: 44 for `transformers` 4.36.2, 22 for `torch` 2.5.1, and none for
+  `coremltools` 8.3.0 or `numpy` 1.26.3. The section now carries the current
+  figures, names its source and date, and drops the `torch` half.
+- **The README now documents the warning `transformers` prints on import**
+  when no framework is installed ("None of PyTorch, TensorFlow >= 2.0, or Flax
+  have been found …"). It is the visible cost of this release, it is harmless
+  here, and letting people discover it unexplained would look like a broken
+  setup.
+
 ## [1.0.1] — 2026-08-08
 
 Maintenance release. One real defect in the benchmark, one README claim the
@@ -103,5 +149,6 @@ not estimates and not a benchmark worth citing:
 The low utilisation and the threading non-result are the interesting part; the
 raw throughput number is not.
 
+[1.1.0]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.1.0
 [1.0.1]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.0.1
 [1.0.0]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.0.0

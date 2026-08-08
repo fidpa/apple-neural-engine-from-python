@@ -1,8 +1,9 @@
 # Pinned to the versions that worked on M4 Pro / macOS / Python 3.12.7.
 # coremltools 8.3.0 is REQUIRED — 7.x fails to load CoreML.framework on
 # Python 3.12 (error: "Unable to load CoreML.framework").
-# transformers is needed by ane_working.py (BertTokenizer).
+# transformers is needed by ane_working.py (BertTokenizer) — the tokenizer
+# only, never a model class, which is why no deep-learning framework belongs
+# in this file. CoreML does the inference.
 coremltools==8.3.0
 transformers==4.36.2
 numpy==1.26.3
-torch==2.5.1
