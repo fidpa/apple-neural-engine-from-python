@@ -106,7 +106,17 @@ def run_pool(model: MLModel, inputs: Inputs, seconds: int,
             while len(futures) < workers * 2:
                 futures.append(ex.submit(model.predict, inputs[count % len(inputs)]))
                 count += 1
-            futures = [f for f in futures if not f.done()]
+            # Call .result() on finished futures instead of just dropping them:
+            # a dropped future swallows its exception, and a failed inference
+            # would then still be counted in `count` — the benchmark would
+            # report a throughput number for work that never happened.
+            pending = []
+            for f in futures:
+                if f.done():
+                    f.result()
+                else:
+                    pending.append(f)
+            futures = pending
         for f in futures:
             f.result()
     rate = count / (time.perf_counter() - start)

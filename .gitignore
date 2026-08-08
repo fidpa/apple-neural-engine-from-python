@@ -17,6 +17,9 @@ __pycache__/
 # Private marketing draft, not for the public repo
 LINKEDIN_POST.md
 
+# Private working instructions for Claude Code, not for the public repo
+CLAUDE.md
+
 # IDE / tooling
 .idea/
 .vscode/

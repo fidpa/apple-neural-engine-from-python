@@ -1,0 +1,69 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    name: Python (ruff + syntax)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Reads .python-version, so the gate uses the exact interpreter the
+      # README promises (3.12.7) instead of drifting to whatever '3.12'
+      # resolves to on the runner today.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      # Pinned on purpose: an unpinned ruff changes its default rule set
+      # between releases and turns this gate into a moving target.
+      # The rule selection itself lives in ruff.toml.
+      - name: Install ruff
+        run: pip install ruff==0.16.0
+
+      - name: Run ruff
+        run: ruff check .
+
+      # The scripts import coremltools, which is macOS-only. They cannot be
+      # executed on a Linux runner, so this checks syntax, not behaviour.
+      - name: Validate Python syntax
+        run: python -m compileall -q ane_working.py ane_benchmark.py model_inspect.py
+
+  shell:
+    name: Shell (shellcheck + syntax)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        run: shellcheck --severity=warning --shell=bash download_model.sh
+
+      - name: Validate Bash syntax
+        run: bash -n download_model.sh
+
+  requirements:
+    name: Requirements pinned
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # The whole point of this repository is that these exact versions
+      # reproduce. A range or an unpinned entry breaks that promise, so it
+      # fails the build instead of being noticed months later.
+      - name: Every requirement must be pinned with ==
+        run: |
+          if grep -vE '^\s*(#|$)' requirements.txt \
+             | grep -vE '^[A-Za-z0-9_.-]+==[0-9]'; then
+            echo "::error::requirements.txt contains an entry that is not pinned with =="
+            exit 1
+          fi
+          echo "OK: every requirement is pinned exactly"

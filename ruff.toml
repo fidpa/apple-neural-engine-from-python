@@ -1,0 +1,34 @@
+# Ruff configuration — deliberately explicit.
+#
+# The rule set is pinned here on purpose. Ruff's *default* selection grows with
+# every release, so a bare `ruff check` gates against a moving target: on
+# 2026-08-08, ruff 0.16 flagged two findings on an unchanged tree that older
+# versions did not report.
+#
+# The scripts in this repository are preserved session artifacts (see the
+# Provenance section of the README). The gate exists to catch real breakage —
+# syntax errors, undefined names, unused imports — not to restyle first-hand
+# code. That is also why there is no `ruff format` gate.
+
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = [
+    "E4",  # pycodestyle: imports
+    "E7",  # pycodestyle: statements
+    "E9",  # pycodestyle: runtime/syntax errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "BLE", # flake8-blind-except — the sources already carry `# noqa: BLE001`
+           # on the two `except Exception` blocks that are deliberate (a probe
+           # must try every combination, a demo must survive one bad case).
+           # Without BLE selected those directives are dead text.
+    "EXE", # flake8-executable — shebang and file mode must agree.
+    "RUF", # includes RUF100: a `# noqa` for a rule that is no longer enabled
+           # is a lie about what was checked. This is what caught the two
+           # dead BLE001 directives above.
+]

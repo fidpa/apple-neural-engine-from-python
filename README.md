@@ -28,7 +28,7 @@ something the next curious person reproduces in 10 minutes.
 | File | What it does |
 |------|--------------|
 | **`ane_working.py`** | The real demo — tokenises real (context, question) pairs, runs them through the CoreML model on the ANE, extracts the answer span. Start here. |
-| **`model_inspect.py`** | Dumps the model spec (input names, dtypes, shapes) **and** systematically probes which dtype/shape combinations the model accepts. This is *how* the gotchas below were found — run it on any CoreML model. |
+| **`model_inspect.py`** | Dumps the model spec (input names, dtypes, shapes) **and** systematically probes which dtype/shape combinations the model accepts. This is *how* the gotchas below were found. The spec dump works on any CoreML model; the probe is wired to this model's file name and its `wordIDs` / `wordTypes` input keys — point those two at your own model to reuse it. |
 | **`ane_benchmark.py`** | Throughput probe, `--mode {fast,blitz,full}`. `--mode full` demonstrates that threading does **not** help (CoreML serialises inference). |
 | `download_model.sh` | Fetches Apple's BERT-SQuAD model (not redistributed here). |
 
