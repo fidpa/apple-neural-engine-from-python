@@ -155,8 +155,9 @@ results with hardware details welcome — open an issue or PR.
 
 ## License
 
-MIT (code) — see [LICENSE](LICENSE). The BERT-SQuAD CoreML model is Apple's
-property and is fetched, not redistributed.
+MIT — see [LICENSE](LICENSE). Third-party components that this project fetches
+but does not redistribute (Apple's BERT-SQuAD CoreML model, the tokenizer
+vocabulary) are listed in [NOTICE](NOTICE).
 
 ## Author
 

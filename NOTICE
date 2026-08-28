@@ -1,0 +1,19 @@
+Third-party components
+======================
+
+This repository is licensed under the MIT License (see LICENSE). It contains
+source code, documentation, and scripts only; the components listed below are
+NOT part of this repository and are NOT redistributed by it.
+
+BERT-SQuAD CoreML model
+-----------------------
+`download_model.sh` fetches Apple's BERT-SQuAD sample model at setup time from
+Apple's Core ML Models page. The model file is Apple's asset, is not covered by
+the MIT License of this repository, and is governed by Apple's own terms:
+
+  https://developer.apple.com/machine-learning/models/
+
+Tokenizer vocabulary
+--------------------
+The tokenizer is downloaded from Hugging Face at setup time and carries the
+license of its own repository.

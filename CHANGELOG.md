@@ -5,6 +5,33 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-08-28: GitHub identifies the license as MIT
+
+GitHub reported no license for this project, and has done so since the first
+commit: `LICENSE` carried the MIT text followed by a note about Apple's model.
+GitHub's license detection reads any addition to the MIT text as a modification.
+The license field on the repository page therefore stayed empty, and a
+repository without a detected license matches no `license:` filter in GitHub
+search, while the README badge said MIT. The note itself was correct and stays,
+in the file where such information belongs.
+
+### Changed
+
+- **The license field on the repository page says MIT.** `LICENSE` now carries
+  the MIT text and nothing else; with the note removed it is byte-identical to
+  that of a repository GitHub reports as `mit`. Nothing about the terms changed:
+  the model was never covered, because `download_model.sh` fetches it and this
+  repository has never contained it.
+- **Third-party components have their own file.** `NOTICE` names what this
+  project fetches at setup time and does not redistribute: Apple's BERT-SQuAD
+  CoreML model, under Apple's terms, and the tokenizer vocabulary from Hugging
+  Face. `README.md` points at it from the `## License` section.
+
+### Upgrade notes
+
+None. This release changes no code and no terms; it moves an informational note
+out of `LICENSE` and into `NOTICE`.
+
 ## [1.1.1] - 2026-08-28: Older sections now match the code they describe
 
 An editorial pass over the whole changelog. Every entry was read against the tag
