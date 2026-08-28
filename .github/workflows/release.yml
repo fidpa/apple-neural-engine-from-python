@@ -1,0 +1,64 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          HEADING="## [${VERSION}]"
+
+          # Exactly one section may carry this version. Two of them are what a
+          # second session writing into the same changelog produces, and the
+          # release body would then hold both. The test has to be literal AND
+          # anchored, so it uses the same index($0,h)==1 the extraction uses:
+          # a regex reads the dots in the version as metacharacters, and an
+          # unanchored fixed-string match counts a prose line that quotes a
+          # heading.
+          [ "$(awk -v h="$HEADING" 'index($0,h)==1' CHANGELOG.md | wc -l)" = 1 ] \
+            || { echo "Expected exactly one '$HEADING' section in CHANGELOG.md"; exit 1; }
+
+          # !p guards the anchor: without it the rule fires again on a second
+          # heading of the same version, sets p anew and skips the exit, so both
+          # sections end up in one body. The stop rules come second, so the
+          # anchor has to decline the duplicate itself.
+          awk -v head="$HEADING" '
+            !p && index($0, head) == 1 { p=1; next }
+            /^## / { if (p) exit }
+            /^\[[0-9]/ { if (p) exit }
+            p { print }
+          ' CHANGELOG.md | sed -e '/./,$!d' > release-notes.md
+          test -s release-notes.md || { echo "Empty release notes for $VERSION"; exit 1; }
+
+          HEADLINE=$(awk -v head="$HEADING" '
+            index($0, head) == 1 {
+              if (match($0, /- [0-9]{4}-[0-9]{2}-[0-9]{2}: /)) {
+                print substr($0, RSTART + RLENGTH); exit
+              }
+            }
+          ' CHANGELOG.md)
+          if [ -n "$HEADLINE" ]; then
+            echo "title=v${VERSION}: ${HEADLINE}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::No headline in the heading for ${VERSION}; falling back to the tag name"
+            echo "title=v${VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.changelog.outputs.title }}
+          body_path: release-notes.md
