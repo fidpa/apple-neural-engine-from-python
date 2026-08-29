@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-08-29: The README drops its em-dash habit
+
+The prose reads the same, the punctuation is now plain ASCII, and one typo in a
+quick-start comment is fixed. Nothing about the experiment, the scripts, or the
+pins changed.
+
+### Changed
+
+- **Twenty em-dash asides became regular punctuation.** Colons, commas, and
+  semicolons where the dashes stood, the ellipsis and the "5-10x" range are
+  plain ASCII, and the Activity Monitor menu path uses ">" separators. The
+  problem-intro paragraph lost its "The Problem" label and reads as plain
+  prose; its content is unchanged
+
+### Fixed
+
+- **A quick-start comment said "see/why" where it meant "see why"**
+  (`python model_inspect.py` line in the README). The slash was a typo, not
+  a path
+- **The `[1.1.2]` link reference at the end of this file was missing.** The
+  section existed, the reference did not; added alongside this release's
+
 ## [1.1.2] - 2026-08-28: GitHub identifies the license as MIT
 
 GitHub reported no license for this project, and has done so since the first
@@ -253,6 +275,8 @@ Read off Activity Monitor by eye, without `powermetrics`:
 The low utilisation and the threading non-result are the interesting part; the
 raw throughput number is not.
 
+[1.1.3]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.1.3
+[1.1.2]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.1.2
 [1.1.1]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.1.1
 [1.1.0]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.1.0
 [1.0.1]: https://github.com/fidpa/apple-neural-engine-from-python/releases/tag/v1.0.1
